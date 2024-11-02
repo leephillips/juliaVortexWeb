@@ -1,0 +1,546 @@
+<script src="https://unpkg.com/htmx.org@2.0.3"> </script>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"> </script>
+<style>
+    form p, form label, form div {
+       font-size:2.5cqw; line-height:2.6cqw;
+    }
+    input[type=range] {
+       width: 24cqw;
+    }
+    div#swim input {
+        position: absolute;
+        width: 2cqw;
+        height: 2cqw;
+        margin: 0px;
+        padding: 0px;
+        appearance: none;
+    }
+    div#swim input:checked {
+        border: solid red 1cqw;
+        border-radius: 2cqw;
+    }
+    div#vfield {
+        position:relative;
+        left: 0px;
+        container-type:size;
+        width:80vw;
+        height:46vw;
+    }
+    div#swim, video#swim {
+        position:absolute;
+        left: 30cqw;
+        top: 0px;
+        width: 40cqw;
+        height: 40cqw;
+        border:solid blue 0.4cqw;
+    }
+    video#swim {
+        z-index: 50;
+    }
+    div#vfield > button {
+       cursor: pointer;
+       box-shadow: 0.6cqw 0.6cqw 0px #744;
+       width:18cqw; height:3.4cqw;
+       font-size:2.8cqw; line-height:0px;
+       padding:0px; 
+       margin-top: 2cqw;
+    }
+    p#rec {
+        margin-top:46cqw;
+    }
+    div#waiting {
+        position:absolute;
+        left: 30cqw;
+        top: 0px;
+        width: 40cqw;
+        height: 40cqw;
+        border:solid black 1mm;
+        display:none;
+        opacity: 0.8;
+        background-color: #ccffcc;
+    }
+    div#waiting > p {
+        color: green;
+        margin-top:17cqw;
+        fo nt-size:3cqw;
+        text-align:center;
+    }
+    h1 {
+        text-align:center;
+    }
+</style>
+<script>
+// for (ccc of co.split()) {console.log(ccc);}
+    function waiting() {
+        let w = document.querySelector("#waiting");
+        w.style["display"] = "block";
+        document.querySelector("#start").style["display"] = "none";
+        document.querySelector("#timescale").style["display"] = "block";
+        document.querySelector('label[for="timescale"]').style["visibility"] = "visible";
+        document.querySelector("#instruct").style["display"] = "none";
+        document.querySelector("#howreload").style["display"] = "block";
+    }
+    function greenme(ref) {
+        vs = document.querySelector("#pnn");
+        if(vs.checked) { ref.style["border-color"] = "green"; }
+        else { ref.style["border-color"] = "blue"; }
+    }
+    function setv() {
+        cs = document.querySelectorAll("div#swim > div > input");
+        var i = 0;
+        cs.forEach((cb) => {
+            i = i + 1;
+            if (cb.checked) {
+                cb.setAttribute("name", i);
+                cb.setAttribute("value", 1);
+                if (cb.style["border-color"] == "green") {  cb.setAttribute("value", -1); }
+            }
+        } );
+    }
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    async function move() {
+      document.querySelector("#swim").style["border-style"] = "dashed"
+      document.querySelector("#swim").style["border-color"] = "rgba(0,0,255,0.2)"
+      document.querySelector("#swim").style["border-width"] = "0.2cqw"
+      while (true) {
+        cs = document.querySelectorAll("input.swimmers");
+        m = []
+        cs.forEach((cb) => {
+                cb.style["position"] = "absolute";
+                m.push(cb);
+        } );
+        var ns = m[0].attributes.x.value.split(" ").length
+        for (i=0; i<=ns; i++) {
+            for (v of m) {
+                v.style["left"] = 40 * v.attributes.x.value.split(" ")[i]+"cqw";
+                v.style["top"] = 40 - 40 * v.attributes.y.value.split(" ")[i]+"cqw";
+            }                         
+            // await sleep(0.08 * 1000);
+            await sleep(400 - document.querySelector("#timescale").value);
+        }
+        await sleep(500);
+      }  
+    }
+</script>
+<form data-hx-ext="ws" data-ws-send data-ws-connect="wss://pluton.lee-phillips.org/vortex/">
+  <div id="vfield">
+    <div id='instruct'>Click within<br>the blue box<br>to add<br><input type="radio" name="pn" id="pnp" value="p" checked>
+        <label for="pnp" style='color:blue;'>positive</label> or<br>
+        <input type="radio" name="pn" id="pnn" value="n">
+        <label for="pnn" style='color:green;'>negative</label> vorticies.<br><br>
+        <br><br>
+    </div>
+         <button type='submit' id='start' onclick="waiting();">Start</button><br>
+    <input type='range' value='300' min='0' max='400' id='timescale' style="display:none;">
+    <label for='timescale' style='visibility:hidden'>Speed</label>
+    <p id="howreload" style="font-size:2cqw; display:none;">To reinitialize, reload the page.</p>
+<div id='swim'>
+<div onmouseleave="setv();">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:0.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:2.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:4.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:6.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:8.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:10.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:12.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:14.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:16.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:18.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:20.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:22.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:24.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:26.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:28.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:30.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:32.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:34.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:36.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:0.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:2.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:4.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:6.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:8.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:10.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:12.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:14.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:16.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:18.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:20.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:22.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:24.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:26.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:28.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:30.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:32.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:34.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:36.0cqw; top:38.0cqw;">
+<input type="checkbox" onclick="greenme(this);" style="left:38.0cqw; top:38.0cqw;">
+        </div>
+    </div> 
+    <div id="waiting"><p>...Receiving data...</p></div>
+  </div>
+</form>
+<script id='moveit'></script>
